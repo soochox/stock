@@ -329,7 +329,7 @@ except FileNotFoundError:
 
 data2 = add_tech(data)
 buy_sell(data2)
-
+print('test')
 
 # 데이터 합병
 # data_jisu2 = pd.DataFrame()
