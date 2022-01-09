@@ -125,7 +125,7 @@ def add_tech(df):    #한종목의 기술적 지표 계산
 
     return df
 
-def buy_sell(df):
+def tutle_stg(df):
     close_list = df.Close
     position = 0
     position_list = []
@@ -328,7 +328,7 @@ except FileNotFoundError:
     data_jisu = download_jisu(code)
 
 data2 = add_tech(data)
-buy_sell(data2)
+tutle_stg(data2)
 print('test')
 
 # 데이터 합병

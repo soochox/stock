@@ -790,6 +790,223 @@ class baek_data_analysis2(QMainWindow, form_class):
         print("tech_manual 최종완료")
         self.sound_play()
 
+    def new_tutle_stg(self, df):
+        close_list = df.Close
+        event = 0
+        event_list = []
+        position = 0
+        position_list = []
+        order_list = []
+
+        buy_type = 0
+        buy_type_list = []
+        buy_price = 0
+        buy_price_list = []
+        sell_price = 0
+        sell_price_list = []
+        open_profit = 0
+        open_profit_list = []
+        close_profit = 0
+        close_profit_list = []
+        winnloss = 0
+        winnloss_list = []
+
+        # stop_loss_price_list = np.zeros(len(close_list))  # 나중에 추가할 것
+
+        max_20_list = df.max_20_R
+        max_55_list = df.max_55_R
+        min_10_list = df.min_10_R
+        min_20_list = df.min_20_R
+
+        for i, close in enumerate(close_list):
+            max_20 = max_20_list.iloc[i]
+            max_55 = max_55_list.iloc[i]
+            min_10 = min_10_list.iloc[i]
+            min_20 = min_20_list.iloc[i]
+
+            if max_20 == 0 and winnloss == 0 and position == 0:  # S1 신규매입 조건 : 20일 신고가, 직전거래에서 손해시(winnloss == 0)
+                event = 1
+                event_list.append(event)
+                order = 1
+                order_list.append(order)
+                position = 1
+                position_list.append(position)
+                buy_type = "S1"
+                buy_type_list.append(buy_type)
+
+                buy_price = close
+                buy_price_list.append(buy_price)
+                sell_price = 0
+                sell_price_list.append(sell_price)
+                open_profit = 0
+                open_profit_list.append(open_profit)
+                close_profit = 0
+                close_profit_list.append(close_profit)
+                winnloss = 0
+                winnloss_list.append(winnloss)
+
+            # if max_20 == 0 and N != None and N_ratio > 0.01 and ma60 != None and ma60 > 1 and winnloss == 0 and position == 0:
+            # S1 신규매입 조건 : 20일 신고가, 직전거래에서 손해시(winnloss == 0), N은 최소 2%이상 --- S1 적용, 60이평 위
+            # if max_20 == 0 and N != None and N_ratio > 0.01 and winnloss == 0 and position == 0:
+            #     # S1 신규매입 조건 : 20일 신고가, 직전거래에서 손해시(winnloss == 0), N은 최소 2%이상 --- S1 적용, 60이평 조건 제거
+
+            elif max_55 == 0 and winnloss == 1 and position == 0:  # S1 신규매입 조건 : 20일 신고가, 직전거래에서 수익시(winnloss == 1)
+
+                # elif max_55 == 0 and N != None and N_ratio > 0.01 and ma60 != None and ma60 > 1 and winnloss == 1 and position == 0:
+                # S2 매수조건 진입, 60이평 위 조건 추가
+                # elif max_55 == 0 and N != None and N_ratio > 0.01 and winnloss == 1 and position == 0:
+                #     # S2 매수조건 진입, 60이평 위 조건 제거
+                event = 1
+                event_list.append(event)
+                order = 1
+                order_list.append(order)
+                position = 1
+                position_list.append(position)
+                buy_type = "S2"
+                buy_type_list.append(buy_type)
+                buy_price = close
+                buy_price_list.append(buy_price)
+                sell_price = 0
+                sell_price_list.append(sell_price)
+                open_profit = 0
+                open_profit_list.append(open_profit)
+                close_profit = 0
+                close_profit_list.append(close_profit)
+                winnloss = 1
+                winnloss_list.append(winnloss)
+
+            # elif position == 1 and close < stoploss_price:  # 손절(종가기준)
+            #     order = -1
+            #     order_list.append(order)
+            #     position = 0
+            #     position_list.append(position)
+            #
+            #     close_profit = close - buy_price
+            #
+            #     buy_price = 0
+            #     buy_price_list.append(buy_price)
+            #     sell_price = close
+            #     sell_price_list.append(sell_price)
+            #     open_profit = 0
+            #     open_profit_list.append(open_profit)
+            #
+            #     close_profit_list.append(close_profit)
+            #     if close_profit > 0:
+            #         winnloss = 1
+            #     else:
+            #         winnloss = 0
+            #     winnloss_list.append(winnloss)
+
+            elif min_10 == 0 and buy_type == "S1" and position == 1:  # S1 청산 조건 : 종가기준 10일 최저가 하향 돌파
+                event = 1
+                event_list.append(event)
+                order = -1
+                order_list.append(order)
+                position = 0
+                position_list.append(position)
+
+                buy_type_list.append(buy_type)
+                buy_type = 0
+
+                close_profit = close - buy_price
+
+                buy_price = 0
+                buy_price_list.append(buy_price)
+                sell_price = close
+                sell_price_list.append(sell_price)
+                open_profit = 0
+                open_profit_list.append(open_profit)
+
+                close_profit_list.append(close_profit)
+                if close_profit > 0:
+                    winnloss = 1
+                else:
+                    winnloss = 0
+                winnloss_list.append(winnloss)
+
+            elif min_20 == 0 and buy_type == "S2" and position == 1:  # S2 청산 조건 : 종가기준 20일 최저가 하향 돌파
+                event = 1
+                event_list.append(event)
+                order = -1
+                order_list.append(order)
+                position = 0
+                position_list.append(position)
+                buy_type_list.append(buy_type)
+                buy_type = 0
+
+                close_profit = close - buy_price
+
+                buy_price = 0
+                buy_price_list.append(buy_price)
+                sell_price = close
+                sell_price_list.append(sell_price)
+                open_profit = 0
+                open_profit_list.append(open_profit)
+
+                close_profit_list.append(close_profit)
+                if close_profit > 0:
+                    winnloss = 1
+                else:
+                    winnloss = 0
+                winnloss_list.append(winnloss)
+
+            else:
+                event = 0
+                event_list.append(event)
+                order = 0
+                order_list.append(order)
+                position_list.append(position)
+                buy_type_list.append(buy_type)
+                buy_price_list.append(buy_price)
+                sell_price = 0
+                sell_price_list.append(sell_price)
+                if position == 1:
+                    open_profit = close - buy_price
+                    open_profit_list.append(open_profit)
+                else:
+                    open_profit = 0
+                    open_profit_list.append(open_profit)
+                close_profit = 0
+                close_profit_list.append(close_profit)
+                winnloss_list.append(winnloss)
+
+        df['event'] = event_list
+        df['order'] = order_list
+        df['position'] = position_list
+        df['buy_type'] = buy_type_list
+        df['buy_price'] = buy_price_list
+        df['open_profit'] = open_profit_list
+        df['close_profit'] = close_profit_list
+        df['winnloss'] = winnloss_list
+        df['cum_profit'] = df['close_profit'].cumsum() + df['open_profit']  # 누적 수익
+
+        # df.to_csv("test2222222222.csv")
+        return df
+
+    def tutle_to_all_stock(self, kospi_kosdaq='etf_real'):
+        if kospi_kosdaq is False:
+            kospi_kosdaq = self.comboBox_2.currentText()
+        else:
+            print(kospi_kosdaq)
+        code_name = self.codeNname_load(kospi_kosdaq)  # 종목 코드 로드
+        con = sqlite3.connect("c:/users/백/%s_data_add_manual.db" % kospi_kosdaq)  # 키움증권 다운로드 종목 데이터 베이스
+        con2 = sqlite3.connect("c:/users/백/%s_tutle.db" % kospi_kosdaq)  # 키움증권 다운로드 종목 데이터 베이스
+        name_list = code_name["name"]  # 코드네임을 리스트로 저장
+        # name_list = ['셀트리온제약', '천보']
+        # name_list = ['한일철강']
+
+        for i, name in enumerate(name_list):  # 뺑뺑이 돌리기
+            df = pd.read_sql("SELECT * FROM " + "'" + name + "' ", con, index_col='index')
+            print(name + " 진입")
+            df2 = self.new_tutle_stg(df)
+            df2.to_sql(name, con2, if_exists="replace")
+
+            print(i + 1, "/", len(name_list), name, " 완료")
+        print("터틀전략 최종완료")
+        con.close()
+        con2.close()
+        self.sound_play()
+
 
 
     def condition_filter_soup(self):   # buy, hold, sell, stoploss   조건 필터열 삽입(전략을 시뮬레이션 한다), 터틀수프 플러스원 전략
@@ -3744,8 +3961,9 @@ class baek_data_analysis2(QMainWindow, form_class):
         # self.tech__("삼천당제약")  # 한종목의 기술적 지표 계산
         print("시작")
 
-        self.daily_choochun()
+        # self.daily_choochun()
         # self.add_tech('quant')
+        self.tutle_to_all_stock()
 
         # self.add_month_index_all()
         # df = self.read_lookup_data_from_excel()
