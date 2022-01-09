@@ -92,8 +92,8 @@ class baek_data_analysis2(QMainWindow, form_class):
         time.sleep(1)
         self.condition_filter_etf()
         time.sleep(1)
-        # today = datetime.datetime.today().strftime("%Y-%m-%d")
-        today = "2021-12-29"
+        today = datetime.datetime.today().strftime("%Y-%m-%d")
+
         query = "event > 0 and date = '" + today + " 00:00:00'"
         today_result = self.execute_query_input('etf_real', query)
 
