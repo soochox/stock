@@ -15,7 +15,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 # 삼성전자 - 005930
 
 def download_basic_data(code):
-    start_date = '20110102'
+    start_date = '20130102'
     # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
     data = pdr.naver.NaverDailyReader(code, start=start_date).read()
     date_list = []
@@ -27,7 +27,7 @@ def download_basic_data(code):
         date_list.append(date)
 
     df = pd.DataFrame(data)
-    df['index'] = date_list
+    df['Date2'] = date_list
     df['Open'] = pd.to_numeric(df['Open'])
     df['Close'] = pd.to_numeric(df['Close'])
     df['High'] = pd.to_numeric(df['High'])
@@ -36,15 +36,21 @@ def download_basic_data(code):
     df['change_ratio'] = df['Close'].pct_change()  # 변화량을 퍼센테이지로 구한다.
     df['change_ratio'] = df['change_ratio'].round(5)
     df['Volume'] = pd.to_numeric(df['Volume'])
+    df = df.set_index(keys='Date2')
+    df['Date'] = df.index
+    df = df.set_index(keys='Date')          # 인덱스 이름을 원래 Date로 바꾸기
 
-    df.to_csv("test_005930.csv")
     return df
+
+def DataToCSV(data, file_name='test_data'):     # 확장자 명은 쓰지 않는다.
+    file_name = str(file_name) + '.csv'
+    data.to_csv(file_name)
+    print("File saved %s" % file_name)
 
 def download_jisu(code):
     start_date = '20110102'
     # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
     data = pdr.get_data_yahoo(code, start=start_date)
-
     # date_list = []
     # date_index = data.index
     # for date in date_index:
@@ -57,12 +63,10 @@ def download_jisu(code):
     df['Change'] = df['Adj Close'].diff()
     df['change_ratio'] = df['Adj Close'].pct_change()  # 변화량을 퍼센테이지로 구한다.
     df['change_ratio'] = df['change_ratio'].round(5)
-
     df.to_csv("test_jisu.csv")
     return df
 
-
-def add_tech(df):    #한종목의 기술적 지표 계산
+def add_tech(df):    # 한종목의 기술적 지표 계산
     op = df['Open']
     cl = df['Close']
     shift_close = cl.shift()  # 전일 종가
@@ -74,8 +78,6 @@ def add_tech(df):    #한종목의 기술적 지표 계산
     df['Low_R'] = (lo - shift_close) / shift_close
     df['Vol_R'] = vo.pct_change()
     df['Vol_R'] = df['Vol_R'].round(5)      # 전일 대비 거래량
-
-
     max_10_list = df['Close'].rolling(window=10).max()
     min_10_list = df['Close'].rolling(window=10).min()
     max_20_list = df['Close'].rolling(window=20).max()
@@ -84,19 +86,14 @@ def add_tech(df):    #한종목의 기술적 지표 계산
     min_55_list = df['Close'].rolling(window=55).min()
     max_60_list = df['Close'].rolling(window=60).max()
     min_60_list = df['Close'].rolling(window=60).min()
-
     max_10_R_list = (df['Close'] - max_10_list) / max_10_list   # 10일 최고가대비 얼마나 하락했는가
     min_10_R_list = (df['Close'] - min_10_list) / min_10_list  # 10일 최저가대비 얼마나 상승했는가
-
     max_20_R_list = (df['Close'] - max_20_list) / max_20_list
     min_20_R_list = (df['Close'] - min_20_list) / min_20_list
-
     max_55_R_list = (df['Close'] - max_55_list) / max_55_list
     min_55_R_list = (df['Close'] - min_55_list) / min_55_list
-
     max_60_R_list = (df['Close'] - max_60_list) / max_60_list
     min_60_R_list = (df['Close'] - min_60_list) / min_60_list
-
 
     df['max_10_R'] = max_10_R_list
     df['max_10_R'] = df['max_10_R'].round(5)
@@ -122,15 +119,16 @@ def add_tech(df):    #한종목의 기술적 지표 계산
     #          'd1_open_R', 'd1_high_R', 'd1_low_R', 'd1_close_R',
     #          'd2_open', 'd2_high', 'd2_low', 'd2_close', 'd2_open_R', 'd2_high_R', 'd2_low_R', 'd2_close_R',
     #          'max_10_R', 'min_10_R', 'max_20_R', 'min_20_R', 'max_55_R', 'min_55_R', 'max_60_R', 'min_60_R']]
-
     return df
 
-def tutle_stg(df):
+
+def excute_tutle_strategy(df):
     close_list = df.Close
+    event = 0
+    event_list = []
     position = 0
     position_list = []
     order_list = []
-
     buy_type = 0
     buy_type_list = []
     buy_price = 0
@@ -158,6 +156,8 @@ def tutle_stg(df):
         min_20 = min_20_list.iloc[i]
 
         if max_20 == 0 and winnloss == 0 and position == 0:  # S1 신규매입 조건 : 20일 신고가, 직전거래에서 손해시(winnloss == 0)
+            event = 1
+            event_list.append(event)
             order = 1
             order_list.append(order)
             position = 1
@@ -187,6 +187,8 @@ def tutle_stg(df):
             # S2 매수조건 진입, 60이평 위 조건 추가
             # elif max_55 == 0 and N != None and N_ratio > 0.01 and winnloss == 1 and position == 0:
             #     # S2 매수조건 진입, 60이평 위 조건 제거
+            event = 1
+            event_list.append(event)
             order = 1
             order_list.append(order)
             position = 1
@@ -204,29 +206,9 @@ def tutle_stg(df):
             winnloss = 1
             winnloss_list.append(winnloss)
 
-        # elif position == 1 and close < stoploss_price:  # 손절(종가기준)
-        #     order = -1
-        #     order_list.append(order)
-        #     position = 0
-        #     position_list.append(position)
-        #
-        #     close_profit = close - buy_price
-        #
-        #     buy_price = 0
-        #     buy_price_list.append(buy_price)
-        #     sell_price = close
-        #     sell_price_list.append(sell_price)
-        #     open_profit = 0
-        #     open_profit_list.append(open_profit)
-        #
-        #     close_profit_list.append(close_profit)
-        #     if close_profit > 0:
-        #         winnloss = 1
-        #     else:
-        #         winnloss = 0
-        #     winnloss_list.append(winnloss)
-
         elif min_10 == 0 and buy_type == "S1" and position == 1:  # S1 청산 조건 : 종가기준 10일 최저가 하향 돌파
+            event = 1
+            event_list.append(event)
             order = -1
             order_list.append(order)
             position = 0
@@ -252,6 +234,8 @@ def tutle_stg(df):
             winnloss_list.append(winnloss)
 
         elif min_20 == 0 and buy_type == "S2" and position == 1:  # S2 청산 조건 : 종가기준 20일 최저가 하향 돌파
+            event = 1
+            event_list.append(event)
             order = -1
             order_list.append(order)
             position = 0
@@ -276,6 +260,8 @@ def tutle_stg(df):
             winnloss_list.append(winnloss)
 
         else:
+            event = 0
+            event_list.append(event)
             order = 0
             order_list.append(order)
             position_list.append(position)
@@ -292,60 +278,161 @@ def tutle_stg(df):
             close_profit = 0
             close_profit_list.append(close_profit)
             winnloss_list.append(winnloss)
-
+    df['event'] = event_list
     df['order'] = order_list
     df['position'] = position_list
     df['buy_type'] = buy_type_list
     df['buy_price'] = buy_price_list
-    df['open_profit'] = open_profit_list
-    df['close_profit'] = close_profit_list
+    df['stock_open_profit'] = open_profit_list
+    df['stock_close_profit'] = close_profit_list
     df['winnloss'] = winnloss_list
-    df['cum_profit'] = df['close_profit'].cumsum() + df['open_profit']  # 누적 수익
-    print(df)
-    df.to_csv("test2222222222.csv")
+    df['stock_cum_profit'] = df['stock_close_profit'].cumsum() + df['stock_open_profit']  # 누적 수익
+    df['stock_day20_profit'] = df['stock_close_profit'].rolling(window=20).sum() + df['stock_open_profit']    # 최근 20일 수익
+    return df
 
+def data_to_excel(data, save_name="data_result"):  # contine : 이어쓰기 여부 1이면 이어쓰기임   @@@@@@@@@@@@ 수정필요함
 
+    path = "c:/users/백/save_excel.xlsx"
+    wb = load_workbook(path, data_only=True)
+    worksheet_1 = wb.active
+    worksheet_1.delete_cols(1, 100)     # A열 이후 100열 삭제
 
+    # Dataframe을 엑셀로 뿌린다.
+    maxrow = worksheet_1.max_row
+    if maxrow == 1:
+        header = True
+    else:
+        header = False
 
+    for i, row in enumerate(dataframe_to_rows(data, index=True, header=header)):  #한줄씩 엑셀로
+        if len(row) > 1:
+            worksheet_1.append(row)
+    maxrow = worksheet_1.max_row
+    print("최대행은 %s행 입니다." % maxrow)
+    save_name = str(save_name)
+    save_path = "c:/users/백/" + save_name + ".xlsx"
+    wb.save(save_path)
+    print("saved to file name %s.xlsx!!" % save_name)
 
-# tickers = ['^KS11', '^KQ11']  # 코스피, 코스닥
-try:
-    data = pd.read_csv("test_005930.csv")
-    print("File is founded, load data...")
-
-except FileNotFoundError:
-    code = '005930' # 삼성전자
-    print("File is Not founded, download data...")
-    data = download_basic_data(code)
-
-try:
-    data_jisu = pd.read_csv("test_jisu.csv")
-    print("File is founded, load data...")
-
-except FileNotFoundError:
-    code = '^KS11'  # 코스피
-    print("File is Not founded, download data...")
-    data_jisu = download_jisu(code)
-
-data2 = add_tech(data)
-tutle_stg(data2)
-print('test')
-
-# 데이터 합병
+#
+# # tickers = ['^KS11', '^KQ11']  # 코스피, 코스닥
+# try:
+#     data = pd.read_csv("test_005930.csv")
+#     print("File is founded, load data...")
+#
+# except FileNotFoundError:
+#     code = '005930' # 삼성전자
+#     print("File is Not founded, download data...")
+#     data = download_basic_data(code)
+#
+# try:
+#     data_jisu = pd.read_csv("test_jisu.csv")
+#     print("File is founded, load data...")
+#
+# except FileNotFoundError:
+#     code = '^KS11'  # 코스피
+#     print("File is Not founded, download data...")
+#     data_jisu = download_jisu(code)
+#
+# data2 = add_tech(data)
+# tut_data = tutle_stg(data2)
+# print('test')
+#
+# # 데이터 합병
 # data_jisu2 = pd.DataFrame()
 # data_jisu2['Date'] = data_jisu['Date']
 # data_jisu2['kospi close'] = data_jisu['Adj Close']
 # data_jisu2['kospi change_r'] = data_jisu['change_ratio']
 # print(data_jisu2)
-# df_merge = pd.merge(data, data_jisu2, how='left', on='Date')
+# df_merge = pd.merge(tut_data, data_jisu2, how='left', on='Date')
 #
 # print(df_merge)
 # df_merge.to_csv("final_data.csv")
-#
-# df = add_tech(data)
+# df_event = df_merge.query('event == 1')
+# df_event = df_event.append(df_merge.query('Date == "2021-12-30"'))
+# df_event.to_csv("event.csv")
+# print(df_merge.query('Date == "2021-12-30"'))
+# df3 = df1.merge(df2, how='outer', on='Date')
+# df3 = pd.concat([df1, df2]).drop_duplicates()       # 합집합
 
+# data = download_basic_data('005930')
+# data = add_tech(data)
+# DataToCSV(data)
 
+def download_test_portfolio_data():
+    code_list = ['005930', '005380', '006360']      # 삼성전자, 현대차, GS건설
+    name_list = ['삼성전자', '현대차', 'GS건설']  # 삼성전자, 현대차, GS건설
+    file_name = "test_database.db"
+    con = sqlite3.connect("c:/users/백/" + file_name)
+    for i in range(len(code_list)):
+        code = code_list[i]
+        name = name_list[i]
+        data = download_basic_data(code)
+        data = add_tech(data)
+        data['name'] = name
+        data['date2'] = data.index
+        data['date_name'] = data['date2'].astype(str) + data['name']        # astype(str) : 원소들을 모두 str형으로 변경한다.
+        data = data.set_index(keys='date_name', drop=True)
+        data = data.rename(columns={'date2': 'Date'})     # 열이름 바꾸기
+        print(data.head(3))
+        data.to_sql(name, con, if_exists="replace")
 
+    con.close()
+    print("완료")
 
+def excute_tutle_strategy_for_portfolio():
+    code_list = ['005930', '005380', '006360']  # 삼성전자, 현대차, GS건설
+    name_list = ['삼성전자', '현대차', 'GS건설']  # 삼성전자, 현대차, GS건설
+    file_name = "test_database.db"
+    con = sqlite3.connect("c:/users/백/" + file_name)
+    df = pd.DataFrame()
+    additional_df = pd.DataFrame()
+    test_df = pd.DataFrame()
+    for i in range(len(code_list)):
+        name = name_list[i]
+        data = pd.read_sql("SELECT * FROM " + "'" + name + "'", con, index_col='date_name')
+        if i == 0:
+            df = excute_tutle_strategy(data)
+        else:
+            add_data = excute_tutle_strategy(data)
+            df = df.append(add_data)
+    df2 = df.sort_values(by='Date')
+    test_df['Date'] = df2.query('event==1')['Date'].drop_duplicates()       # 이벤트가 1인것의 Date를 가져오고 중복을 제거한다.
+    test_df['portfolio_event'] = 1
+    additional_df['sum_portfolio'] = df2.groupby(by='Date')['Close'].sum()       # 일자별 전체 포트폴리오 종가합계
+    additional_df['portfolio_open_profit'] = df2.groupby(by='Date')['stock_open_profit'].sum()       # 일자별 포트폴리오 open 수익 합계
+    additional_df['portfolio_cum_profit'] = df2.groupby(by='Date')['stock_cum_profit'].sum()       # 일자별 포트폴리오 누적 수익 합계
+    df3 = pd.merge(df2, additional_df, on='Date', how='left')       # 포트폴리오 수익을 터틀전략돌린 데이터와 통합한다.
+    print(df3.head(3))
+    df4 = pd.merge(df3, test_df, on='Date', how='left')
+    # print(df3)
+    # df2 = df2.query('event==1')
+    last_date = df4['Date'].iloc[-1]
+    print(last_date)
+    final_data = df4.query('portfolio_event==1')
+    final_data_last_date = final_data['Date'].iloc[-1]
+    final_data_query = 'Date==' + str(last_date)
+    if final_data_last_date != last_date:
+        final_data = final_data.append(df4.query(final_data_query))
+
+    data_to_excel(final_data)
+    # 마지막행 추가 코드 수정 필요함
+
+def test_data():
+    try:
+        data = pd.read_csv("test_data.csv")
+    except FileNotFoundError:
+        data = download_basic_data('005930')
+        data = add_tech(data)
+        DataToCSV(data)
+
+    df = excute_tutle_strategy(data)
+    data_to_excel(df)
+
+# data = download_test_portfolio_data()
+excute_tutle_strategy_for_portfolio()
+# data = download_basic_data('005930')
+
+# DataToCSV(data)
 
 

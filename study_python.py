@@ -1,15 +1,25 @@
-import pandas_datareader as pdr
+import pandas as pd
 
-code = '002800'
-ticker = code + '.KQ'       # 코스닥 KQ, 코스피 KS
-df = pdr.get_data_yahoo(ticker)
-df['change'] = df['Adj Close'].diff()
-df['close2'] = df['Adj Close'].shift()
-df['change_R'] = df['change'] / df['close2']
-df['change_R2'] = df['Adj Close'].pct_change()
+Damage = pd.DataFrame({
+    'name': ['히드라', '저글링', '질럿', '커세어', '마린', '벌처'],
+    'race': ['Zerg', 'Zerg', 'protoss', 'protoss', 'terran', 'terran'],
+    'damage': [10, 5, 16, 5, 6, 20]
+})
+print(data)
 
-print(df[['change', 'Adj Close', 'close2', 'change_R', 'change_R2']])
 
+# import pandas_datareader as pdr
+#
+# code = '002800'
+# ticker = code + '.KQ'       # 코스닥 KQ, 코스피 KS
+# df = pdr.get_data_yahoo(ticker)
+# df['change'] = df['Adj Close'].diff()
+# df['close2'] = df['Adj Close'].shift()
+# df['change_R'] = df['change'] / df['close2']
+# df['change_R2'] = df['Adj Close'].pct_change()
+#
+# print(df[['change', 'Adj Close', 'close2', 'change_R', 'change_R2']])
+#
 
 
 # # import telepot

@@ -62,6 +62,7 @@ class baek_data_analysis2(QMainWindow, form_class):
         self.pushButton_17.clicked.connect(self.data_read)  # 일봉 다운로드
         self.pushButton_18.clicked.connect(self.download_jisu)  # 지수 다운로드
         self.pushButton_19.clicked.connect(self.daily_choochun)  # 지수 다운로드
+        self.pushButton_20.clicked.connect(self.last_stg_to_excel)  # 지수 다운로드
         self.sound_play()
 
     def timeout(self):
@@ -3955,6 +3956,36 @@ class baek_data_analysis2(QMainWindow, form_class):
         self.add_tech_manual()
         time.sleep(0.3)
         self.execute_query_for_all_stock()    # 한 테이블로 합치진 않은 파일에 대하여 쿼리 실행
+
+    def last_stg_to_excel(self):    # 마지막 실행 전략 결과를 엑셀로 보낸다.
+        query_ = 'event > 0'
+
+        self.kospi_kosdaq = self.comboBox_2.currentText()
+        today = datetime.datetime.today().strftime("%Y-%m-%d")
+        load_file_name = "c:/users/백/" + self.kospi_kosdaq + "_tutle.db"
+        save_file_name = today + self.kospi_kosdaq + "stg_result"
+        code_name = self.codeNname_load()  # 종목 코드 로드
+
+        # con = sqlite3.connect("c:/users/백/%s_condition_filter.db" % self.kospi_kosdaq)  # 키움증권 다운로드 종목 데이터 베이스
+        con = sqlite3.connect(load_file_name)  # 키움증권 다운로드 종목 데이터 베이스
+        print("파일을 불러옵니다. 파일명: %s" % load_file_name )
+
+        name_list = code_name["name"]  # 코드네임을 리스트로 저장
+
+
+        df3 = DataFrame()
+        for i, name in enumerate(name_list):  # 뺑뺑이 돌리기
+            print("%s 진입 %s / %s" % (name, i+1, len(name_list)))
+            df1 = pd.read_sql("SELECT * FROM " + "'" + name + "'", con, index_col='index')
+            df2 = df1.query(query_)
+            if df1.position.iloc[-1] > 0:
+                df2 = df2.append(df1.iloc[-1])
+            df3 = df3.append(df2)
+        df3 = df3.sort_values(by='Date')
+        print(df3)
+        con.close()
+        print("완료2")
+        self.simul_data_to_excel(df3, save_file_name)
 
     def test___(self):
         # self.add_month_change()
