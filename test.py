@@ -11,11 +11,12 @@ import openpyxl
 from openpyxl import load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
+from datetime import datetime, timedelta
+
 
 # 삼성전자 - 005930
 
-def download_basic_data(code):
-    start_date = '20130102'
+def download_basic_data(code='005930', start_date='20130102'):      # 데이터 다운로드
     # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
     data = pdr.naver.NaverDailyReader(code, start=start_date).read()
     date_list = []
@@ -42,42 +43,21 @@ def download_basic_data(code):
 
     return df
 
-def DataToCSV(data, file_name='test_data'):     # 확장자 명은 쓰지 않는다.
-    file_name = str(file_name) + '.csv'
-    data.to_csv(file_name)
-    print("File saved %s" % file_name)
-
-def download_jisu(code):
-    start_date = '20110102'
-    # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
-    data = pdr.get_data_yahoo(code, start=start_date)
-    # date_list = []
-    # date_index = data.index
-    # for date in date_index:
-    #     date = str(date)
-    #     date = date[:4] + date[5:7] + date[8:10]
-    #     date = int(date)
-    #     date_list.append(date)
-
-    df = pd.DataFrame(data)
-    df['Change'] = df['Adj Close'].diff()
-    df['change_ratio'] = df['Adj Close'].pct_change()  # 변화량을 퍼센테이지로 구한다.
-    df['change_ratio'] = df['change_ratio'].round(5)
-    df.to_csv("test_jisu.csv")
-    return df
-
-def add_tech(df):    # 한종목의 기술적 지표 계산
+def calculate_technical_index(df):    # 한종목의 기술적 지표 추가
     op = df['Open']
     cl = df['Close']
     shift_close = cl.shift()  # 전일 종가
     hi = df['High']
     lo = df['Low']
     vo = df['Volume']
+
     df['Open_R'] = (op - shift_close) / shift_close
     df['High_R'] = (hi - shift_close) / shift_close
     df['Low_R'] = (lo - shift_close) / shift_close
     df['Vol_R'] = vo.pct_change()
     df['Vol_R'] = df['Vol_R'].round(5)      # 전일 대비 거래량
+
+    # 기준 기간 중 최고 최저가
     max_10_list = df['Close'].rolling(window=10).max()
     min_10_list = df['Close'].rolling(window=10).min()
     max_20_list = df['Close'].rolling(window=20).max()
@@ -86,32 +66,26 @@ def add_tech(df):    # 한종목의 기술적 지표 계산
     min_55_list = df['Close'].rolling(window=55).min()
     max_60_list = df['Close'].rolling(window=60).max()
     min_60_list = df['Close'].rolling(window=60).min()
-    max_10_R_list = (df['Close'] - max_10_list) / max_10_list   # 10일 최고가대비 얼마나 하락했는가
-    min_10_R_list = (df['Close'] - min_10_list) / min_10_list  # 10일 최저가대비 얼마나 상승했는가
-    max_20_R_list = (df['Close'] - max_20_list) / max_20_list
-    min_20_R_list = (df['Close'] - min_20_list) / min_20_list
-    max_55_R_list = (df['Close'] - max_55_list) / max_55_list
-    min_55_R_list = (df['Close'] - min_55_list) / min_55_list
-    max_60_R_list = (df['Close'] - max_60_list) / max_60_list
-    min_60_R_list = (df['Close'] - min_60_list) / min_60_list
 
-    df['max_10_R'] = max_10_R_list
+    # 기준 기간 중 최고/최저가 비율
+    df['max_10_R'] = (df['Close'] - max_10_list) / max_10_list   # 10일 최고가대비 얼마나 하락했는가
+    df['min_10_R'] = (df['Close'] - min_10_list) / min_10_list  # 10일 최저가대비 얼마나 상승했는가
+    df['max_20_R'] = (df['Close'] - max_20_list) / max_20_list
+    df['min_20_R'] = (df['Close'] - min_20_list) / min_20_list
+    df['max_55_R'] = (df['Close'] - max_55_list) / max_55_list
+    df['min_55_R'] = (df['Close'] - min_55_list) / min_55_list
+    df['max_60_R'] = (df['Close'] - max_60_list) / max_60_list
+    df['min_60_R'] = (df['Close'] - min_60_list) / min_60_list
+
     df['max_10_R'] = df['max_10_R'].round(5)
-    df['min_10_R'] = min_10_R_list
     df['min_10_R'] = df['min_10_R'].round(5)
-    df['max_20_R'] = max_20_R_list
     df['max_20_R'] = df['max_20_R'].round(5)
-    df['min_20_R'] = min_20_R_list
     df['min_20_R'] = df['min_20_R'].round(5)
-    df['max_55_R'] = max_55_R_list
     df['max_55_R'] = df['max_55_R'].round(5)
-    df['min_55_R'] = min_55_R_list
     df['min_55_R'] = df['min_55_R'].round(5)
-    df['max_60_R'] = max_60_R_list
     df['max_60_R'] = df['max_60_R'].round(5)
-    df['min_60_R'] = min_60_R_list
     df['min_60_R'] = df['min_60_R'].round(5)
-    #
+
     # # 열순서 정렬
     # df = df[['name', 'Open', 'High', 'Low', 'Close', 'Volume', 'Change', 'change_ratio', 'Open_R',
     #          'High_R', 'Low_R', 'Vol_R', 'atr20(N)', 'vma20_R', 'dp_ma3', 'dp_ma5', 'dp_ma10', 'dp_ma20',
@@ -121,8 +95,52 @@ def add_tech(df):    # 한종목의 기술적 지표 계산
     #          'max_10_R', 'min_10_R', 'max_20_R', 'min_20_R', 'max_55_R', 'min_55_R', 'max_60_R', 'min_60_R']]
     return df
 
+def DataToSqlite(df):   # Sqlite로 데이터 저장 이름 = 삼성전자
 
-def excute_tutle_strategy(df):
+    file_name = 'Calculate_tech_test_data.db'
+    name = '삼성전자'
+
+    con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
+    df.to_sql(name, con, if_exists="replace")
+    con.close()
+    print(name, "Sqlite3로 저장완료")
+
+def LoadDataFromSqlite():       # Sqlite로부터 데이터 불러오기
+    file_name = 'Calculate_tech_test_data.db'
+    name = '삼성전자'
+    con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
+    df = pd.read_sql("SELECT * FROM " + "'" + name + "'", con, index_col='Date')    # 인덱스 칼럼을 Date로 지정
+    con.close()
+    print(name, "Sqlite3로 불러오기 완료")
+    return df
+
+
+def UpdateBasicDateAndTechnicalIndex():     # code = 삼성전자,
+    today_weekday = datetime.today().weekday()      # 오늘 요일, 0 ~ 월요일, 6 ~ 일요일
+    delta_date = 0
+    if today_weekday == 5:   # 오늘 토요일이면
+        delta_date = 1
+    elif today_weekday == 6:    # 오늘이 일요일이면
+        delta_date = 1
+
+    last_date = datetime.today() - timedelta(delta_date)    # 마지막날 토일 제외
+    last_date = last_date.strftime("%Y%m%d")
+
+    df = LoadDataFromSqlite()
+    last_date_from_data = df.index[-1]     # index는 리스트 형식으므로 iloc를 쓰면 안된다는 걸 기억할 것
+
+    if last_date_from_data == last_date:
+        print("데이터가 이미 최신입니다.")
+        exit()      # 데이터가 최신이면 프로그램을 종료한다.
+    else:
+        date_100day_ago = (datetime.today() - timedelta(100)).strftime("%Y%m%d")      # 100일전 날짜
+        basic_data = download_basic_data('005930', start_date=date_100day_ago)
+        data_calculated_techniclal =  calculate_technical_index(basic_data)
+        new_data = df.append(data_calculated_techniclal).drop_duplicates()
+        return new_data     # 최신화된 데이터를 리턴한다.
+
+
+def excute_tutle_strategy(df):      # 터틀전략 실행
     close_list = df.Close
     event = 0
     event_list = []
@@ -418,6 +436,26 @@ def excute_tutle_strategy_for_portfolio():
     data_to_excel(final_data)
     # 마지막행 추가 코드 수정 필요함
 
+
+def download_jisu(code):
+    start_date = '20110102'
+    # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
+    data = pdr.get_data_yahoo(code, start=start_date)
+    # date_list = []
+    # date_index = data.index
+    # for date in date_index:
+    #     date = str(date)
+    #     date = date[:4] + date[5:7] + date[8:10]
+    #     date = int(date)
+    #     date_list.append(date)
+
+    df = pd.DataFrame(data)
+    df['Change'] = df['Adj Close'].diff()
+    df['change_ratio'] = df['Adj Close'].pct_change()  # 변화량을 퍼센테이지로 구한다.
+    df['change_ratio'] = df['change_ratio'].round(5)
+    df.to_csv("test_jisu.csv")
+    return df
+
 def test_data():
     try:
         data = pd.read_csv("test_data.csv")
@@ -429,10 +467,19 @@ def test_data():
     df = excute_tutle_strategy(data)
     data_to_excel(df)
 
+
+
 # data = download_test_portfolio_data()
-excute_tutle_strategy_for_portfolio()
+# excute_tutle_strategy_for_portfolio()
 # data = download_basic_data('005930')
 
-# DataToCSV(data)
+# data = download_basic_data()
+# data_technical_calculated = calculate_technical_index(data)
+# DataToSqlite(date_technical_calculated)
+UpdateBasicDateAndTechnicalIndex()
+# LoadDataFromSqlite()
 
+# df = LoadDataFromSqlite()
+# last_date = df.index[-1]
+# print(last_date)
 
