@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="66f2d854-22d1-4902-8708-4e668654215d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/connection.txt" beforeDir="false" afterPath="$PROJECT_DIR$/connection.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,11 +13,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AI_test_v2.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="115" column="110" lean-forward="true" selection-start-line="115" selection-start-column="12" selection-end-line="115" selection-end-column="110" />
+            <state relative-caret-position="315">
+              <caret line="34" column="114" lean-forward="true" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="114" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -26,11 +25,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test_apply.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="410">
-              <caret line="133" column="8" selection-start-line="133" selection-start-column="8" selection-end-line="133" selection-end-column="8" />
+              <caret line="445" column="53" lean-forward="true" selection-start-line="445" selection-start-column="53" selection-end-line="445" selection-end-column="53" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -41,8 +40,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AI_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="163" column="56" selection-start-line="163" selection-start-column="56" selection-end-line="163" selection-end-column="56" />
+            <state relative-caret-position="152">
+              <caret line="179" selection-start-line="179" selection-end-line="206" selection-end-column="53" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -53,8 +52,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/study_python.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="7" selection-end-column="11" />
+            <state relative-caret-position="95">
+              <caret line="5" column="35" lean-forward="true" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -136,21 +135,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>min_10_R</find>
-      <find>to_all</find>
-      <find>buy_t</find>
-      <find>wind</find>
-      <find>def execute_query_for_all_stock</find>
-      <find>@@@@@@</find>
-      <find>to</find>
-      <find>today</find>
-      <find>stg_to</find>
-      <find>$$</find>
-      <find>stg_</find>
-      <find>to_e</find>
-      <find>to_ex</find>
-      <find>sq</find>
-      <find>def</find>
       <find>Date</find>
       <find>def Da</find>
       <find>index</find>
@@ -162,9 +146,24 @@
       <find>dow</find>
       <find>Dateto</find>
       <find>loadda</find>
-      <find>loadd</find>
       <find>up</find>
       <find>def dow</find>
+      <find>data_t</find>
+      <find>data_to</find>
+      <find>DataTo</find>
+      <find>def down</find>
+      <find>sort</find>
+      <find>drop</find>
+      <find>loadd</find>
+      <find>Datatos</find>
+      <find>end</find>
+      <find>Load</find>
+      <find>tutle</find>
+      <find>def exc</find>
+      <find>jisu</find>
+      <find>def do</find>
+      <find>def downl</find>
+      <find>reset_in</find>
       <find>upd</find>
     </findStrings>
     <replaceStrings>
@@ -240,6 +239,7 @@
         <option value="$PROJECT_DIR$/AI_test.py" />
         <option value="$PROJECT_DIR$/study_python.py" />
         <option value="$PROJECT_DIR$/AI_test_v2.py" />
+        <option value="$PROJECT_DIR$/test_apply.py" />
         <option value="$PROJECT_DIR$/test.py" />
       </list>
     </option>
@@ -256,23 +256,23 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="gaebal" type="b2602c69:ProjectViewProjectNode" />
-              <item name="gaebal" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="Scope">
         <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
           <expand>
             <path>
               <item name="gaebal" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
               <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="gaebal" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gaebal" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -449,15 +449,15 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.45995784" visible="true" weight="0.25460455" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49894625" weight="0.3954496" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.45837724" visible="true" weight="0.25460455" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49841937" weight="0.3954496" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49947312" weight="0.3264516" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.54004216" side_tool="true" visible="true" weight="0.25460455" />
-      <window_info anchor="bottom" id="Python Console" order="9" sideWeight="0.46522656" weight="0.26218852" />
-      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.49420443" weight="0.32575756" />
+      <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.54162276" side_tool="true" visible="true" weight="0.25460455" />
+      <window_info anchor="bottom" id="Python Console" order="9" sideWeight="0.4646997" weight="0.26218852" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.49315068" weight="0.32467532" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -507,12 +507,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test.py</url>
-          <line>298</line>
+          <line>304</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test.py</url>
-          <line>412</line>
+          <line>419</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
       </breakpoints>
@@ -692,10 +692,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/study_python.py">
+    <entry file="file://$PROJECT_DIR$/AI_test_v2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="7" selection-end-column="11" />
+        <state relative-caret-position="1843">
+          <caret line="115" column="110" selection-start-line="115" selection-start-column="12" selection-end-line="115" selection-end-column="110" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -753,20 +756,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AI_test.py">
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="163" column="56" selection-start-line="163" selection-start-column="56" selection-end-line="163" selection-end-column="56" />
+        <state relative-caret-position="264">
+          <caret line="325" lean-forward="true" selection-start-line="325" selection-end-line="325" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test_apply.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="445" column="53" lean-forward="true" selection-start-line="445" selection-start-column="53" selection-end-line="445" selection-end-column="53" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AI_test_v2.py">
+    <entry file="file://$PROJECT_DIR$/study_python.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="115" column="110" lean-forward="true" selection-start-line="115" selection-start-column="12" selection-end-line="115" selection-end-column="110" />
+        <state relative-caret-position="95">
+          <caret line="5" column="35" lean-forward="true" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AI_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="179" selection-start-line="179" selection-end-line="206" selection-end-column="53" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
@@ -775,8 +792,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="133" column="8" selection-start-line="133" selection-start-column="8" selection-end-line="133" selection-end-column="8" />
+        <state relative-caret-position="315">
+          <caret line="34" column="114" lean-forward="true" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="114" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>

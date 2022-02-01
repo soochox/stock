@@ -19,10 +19,16 @@ from datetime import datetime, timedelta
 def download_basic_data(code='005930', start_date='20130102'):      # 데이터 다운로드
     # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
     data = pdr.naver.NaverDailyReader(code, start=start_date).read()
+    date_list = []
+    date_index = data.index
+    for date in date_index:
+        date = str(date)
+        date = date[:4] + date[5:7] + date[8:10]
+        date = int(date)
+        date_list.append(date)
 
     df = pd.DataFrame(data)
-    df.reset_index(inplace=True)
-    df['Date'] = df['Date'].dt.strftime('%Y%m%d')  # 20220128 이런 형식으로 변경
+    df['index'] = date_list     # 형식을 바꾼 날짜를 열이름 index 로 지정한다.
     df['Open'] = pd.to_numeric(df['Open'])
     df['Close'] = pd.to_numeric(df['Close'])
     df['High'] = pd.to_numeric(df['High'])
@@ -31,7 +37,8 @@ def download_basic_data(code='005930', start_date='20130102'):      # 데이터 
     df['change_ratio'] = df['Close'].pct_change()  # 변화량을 퍼센테이지로 구한다.
     df['change_ratio'] = df['change_ratio'].round(5)
     df['Volume'] = pd.to_numeric(df['Volume'])
-
+    df = df.set_index(keys='index')     # 형식을 바꾼 날짜를 인덱스로 지정한다.
+    df['Date'] = df.index           # Date 이름으로 다시 인덱스에서 복사한다.
     # df = df.set_index(keys='index', drop=True)          # 인덱스 이름을 index로 바꾸기, drop=False/True ~ 원본 index열 유지/제거.
     return df
 
@@ -97,8 +104,8 @@ def DataToSqlite(df, file_name='Calculate_tech_test_data'):   # Sqlite로 데이
     con.close()
     print(name, "Sqlite3로 저장완료")
 
-def LoadDataFromSqlite(file_name='Calculate_tech_test_data'):       # Sqlite로부터 데이터 불러오기
-    file_name = file_name + '.db'
+def LoadDataFromSqlite():       # Sqlite로부터 데이터 불러오기
+    file_name = 'Calculate_tech_test_data.db'
     name = '삼성전자'
     con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
     df = pd.read_sql("SELECT * FROM " + "'" + name + "'", con, index_col='index')    # 인덱스 칼럼을 Date로 지정
@@ -128,10 +135,8 @@ def UpdateBasicDateAndTechnicalIndex():     # code = 삼성전자,
         basic_data = download_basic_data('005930', start_date=date_100day_ago)
         data_calculated_techniclal = calculate_technical_index(basic_data)
         df = df.append(data_calculated_techniclal).drop_duplicates(subset=['Date'])
-        df.reset_index(inplace=True)
         # new_data = df.append(data_calculated_techniclal).sort_values(by='Date')
         return df     # 최신화된 데이터를 리턴한다.
-
 
 def excute_tutle_strategy(df):      # 터틀전략 실행
     close_list = df.Close
@@ -146,8 +151,6 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
     buy_price_list = []
     sell_price = 0
     sell_price_list = []
-    hold_day = 0
-    hold_day_list = []      # 보유기간
     open_profit = 0
     open_profit_list =[]
     close_profit = 0
@@ -182,8 +185,6 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
             buy_price_list.append(buy_price)
             sell_price = 0
             sell_price_list.append(sell_price)
-            hold_day = 0
-            hold_day_list.append(hold_day)
             open_profit = 0
             open_profit_list.append(open_profit)
             close_profit = 0
@@ -196,7 +197,7 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
         # if max_20 == 0 and N != None and N_ratio > 0.01 and winnloss == 0 and position == 0:
         #     # S1 신규매입 조건 : 20일 신고가, 직전거래에서 손해시(winnloss == 0), N은 최소 2%이상 --- S1 적용, 60이평 조건 제거
 
-        elif max_55 == 0 and winnloss == 1 and position == 0:    # S2 신규매입 조건 : 55일 신고가, 직전거래에서 수익시(winnloss == 1)
+        elif max_55 == 0 and winnloss == 1 and position == 0:    # S1 신규매입 조건 : 20일 신고가, 직전거래에서 수익시(winnloss == 1)
 
             # elif max_55 == 0 and N != None and N_ratio > 0.01 and ma60 != None and ma60 > 1 and winnloss == 1 and position == 0:
             # S2 매수조건 진입, 60이평 위 조건 추가
@@ -214,8 +215,6 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
             buy_price_list.append(buy_price)
             sell_price = 0
             sell_price_list.append(sell_price)
-            hold_day = 0
-            hold_day_list.append(hold_day)
             open_profit = 0
             open_profit_list.append(open_profit)
             close_profit = 0
@@ -240,8 +239,6 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
             buy_price_list.append(buy_price)
             sell_price = close
             sell_price_list.append(sell_price)
-            hold_day += 1
-            hold_day_list.append(hold_day)
             open_profit = 0
             open_profit_list.append(open_profit)
 
@@ -268,8 +265,6 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
             buy_price_list.append(buy_price)
             sell_price = close
             sell_price_list.append(sell_price)
-            hold_day += 1
-            hold_day_list.append(hold_day)
             open_profit = 0
             open_profit_list.append(open_profit)
 
@@ -291,13 +286,9 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
             sell_price = 0
             sell_price_list.append(sell_price)
             if position == 1:
-                hold_day += 1
-                hold_day_list.append(hold_day)
                 open_profit = close - buy_price
                 open_profit_list.append(open_profit)
             else:
-                hold_day = 0
-                hold_day_list.append(hold_day)
                 open_profit = 0
                 open_profit_list.append(open_profit)
             close_profit = 0
@@ -308,7 +299,6 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
     df['position'] = position_list
     df['buy_type'] = buy_type_list
     df['buy_price'] = buy_price_list
-    df['hold_day'] = hold_day_list
     df['stock_open_profit'] = open_profit_list
     df['stock_close_profit'] = close_profit_list
     df['winnloss'] = winnloss_list
@@ -446,30 +436,28 @@ def excute_tutle_strategy_for_portfolio():
 
 
 def download_jisu():
-    kospi_ticker = '^KS11'
-    kosdaq_ticker = '^KQ11'
+    tickers = ['^KS11', '^KQ11']  # 코스피, 코스닥
+    names = ['kospi', 'kosdaq']
+    file_name = "jisu_data_download.db"
+    con = sqlite3.connect("c:/users/백/" + file_name)
 
-    data_kospi = pdr.get_data_yahoo(kospi_ticker, start='20190101')
-    data_kospi.reset_index(inplace=True)        # inplace=True 원본을 놔두지않고 바로 바꾼다.
-    data_kospi['Date'] = data_kospi['Date'].dt.strftime("%Y%m%d")        # 20220128 이런 형식으로 변경
-    return data_kospi
-
-
+    start_date = '20110102'
+    # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
+    data = pdr.get_data_yahoo(code, start=start_date)
+    # date_list = []
     # date_index = data.index
     # for date in date_index:
     #     date = str(date)
     #     date = date[:4] + date[5:7] + date[8:10]
     #     date = int(date)
     #     date_list.append(date)
-    # df = pd.DataFrame(data)
-    # df['index'] = date_list
-    # df['Open'] = pd.to_numeric(df['Open'])
-    # df['Close'] = pd.to_numeric(df['Close'])
-    # df['High'] = pd.to_numeric(df['High'])
-    # df['Low'] = pd.to_numeric(df['Low'])
-    # df['Change'] = df['Close'].diff()
-    # df['Volume'] = pd.to_numeric(df['Volume'])
-    #     df.to_sql(name, con, if_exists="replace")
+
+    df = pd.DataFrame(data)
+    df['Change'] = df['Adj Close'].diff()
+    df['change_ratio'] = df['Adj Close'].pct_change()  # 변화량을 퍼센테이지로 구한다.
+    df['change_ratio'] = df['change_ratio'].round(5)
+    df.to_csv("test_jisu.csv")
+    return df
 
 def test_data():
     try:
@@ -482,34 +470,4 @@ def test_data():
     df = excute_tutle_strategy(data)
     DataToExcel(df)
 
-
-# data = download_basic_data()
-# data_technical_calculated = calculate_technical_index(data)
-# DataToSqlite(data_technical_calculated)
-# data1 = LoadDataFromSqlite()
-# print(data1)
-
-# data = LoadDataFromSqlite()
-# data_technical_calculated = calculate_technical_index(data)
-# print(data_technical_calculated)
-
-# DataToSqlite(date_technical_calculated)
-# LoadDataFromSqlite()
-
-# data = LoadDataFromSqlite()
-# result = excute_tutle_strategy(data)
-# DataToExcel(result)
-# print(result)
-
-
-a = download_basic_data()
-a = calculate_technical_index(a)
-
-DataToSqlite(a)
-# a = a.reset_index()
-# date = a['Date']
-# formated_date = date.dt.strftime("%Y%m%d")      # 20220128 이런 형식으로 변경
-# print(formated_date)
-
-print(a)
-
+data = LoadDataFromSqlite()
