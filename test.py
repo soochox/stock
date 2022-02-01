@@ -512,4 +512,4 @@ DataToSqlite(a)
 # print(formated_date)
 
 print(a)
-print(a)
+
