@@ -13,11 +13,22 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 
 from datetime import datetime, timedelta
 
+def DownloadStockCode():
+    df = pd.read_html('http://kind.krx.co.kr/corpgeneral/corpList.do?method=download', header=0)[0]     # 한국거래소 홈페이지에서 자동으로 종목코드를 다운로드한다.
+    df_columns = df.columns
+    df.drop([df_columns[3], df_columns[4], df_columns[5], df_columns[6], df_columns[7], df_columns[8]], axis=1, inplace=True)
+    df.rename(columns={'회사명': 'name', '종목코드': 'code', '업종': 'category'}, inplace=True)
+    df['code'] = df['code'].astype('str')       # 코드를 문자열 타입으로 바꾸기
+    df['code'] = df['code'].str.zfill(6)        # 6 자리만큼 0으로 채운다.
+    df = df.query("category != '신탁업 및 집합투자업' and category != '금융 지원 서비스업' and category != '기타 금융업'")        # 스팩, 지주, 투자회사 제거
+    return df
 
 # 삼성전자 - 005930
-
 def download_basic_data(code='005930', start_date='20130102'):      # 데이터 다운로드
     # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
+
+    jisu = Download_Jisu(start=start_date)     # 지수 다운로드
+
     data = pdr.naver.NaverDailyReader(code, start=start_date).read()
 
     df = pd.DataFrame(data)
@@ -30,7 +41,9 @@ def download_basic_data(code='005930', start_date='20130102'):      # 데이터 
     df['Change'] = df['Close'].diff()
     df['change_ratio'] = df['Close'].pct_change()  # 변화량을 퍼센테이지로 구한다.
     df['change_ratio'] = df['change_ratio'].round(5)
-    df['Volume'] = pd.to_numeric(df['Volume'])
+    df['Volume'] = pd.to_numeric(df['Volume'])      # 데이터 타입을 숫자형으로 바꾸기
+
+    df = pd.merge(df, jisu, on='Date', how='left')
 
     # df = df.set_index(keys='index', drop=True)          # 인덱스 이름을 index로 바꾸기, drop=False/True ~ 원본 index열 유지/제거.
     return df
@@ -87,11 +100,9 @@ def calculate_technical_index(df):    # 한종목의 기술적 지표 추가
     #          'max_10_R', 'min_10_R', 'max_20_R', 'min_20_R', 'max_55_R', 'min_55_R', 'max_60_R', 'min_60_R']]
     return df
 
-def DataToSqlite(df, file_name='Calculate_tech_test_data'):   # Sqlite로 데이터 저장 이름 = 삼성전자
+def DataToSqlite(df, name='삼성전자', file_name='Calculate_tech_test_data'):   # Sqlite로 데이터 저장 이름 = 삼성전자
 
     file_name = file_name + '.db'
-    name = '삼성전자'
-
     con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
     df.to_sql(name, con, if_exists="replace")
     con.close()
@@ -133,7 +144,7 @@ def UpdateBasicDateAndTechnicalIndex():     # code = 삼성전자,
         return df     # 최신화된 데이터를 리턴한다.
 
 
-def excute_tutle_strategy(df):      # 터틀전략 실행
+def run_tutle_strategy(df):      # 터틀전략 실행
     close_list = df.Close
     event = 0
     event_list = []
@@ -149,7 +160,7 @@ def excute_tutle_strategy(df):      # 터틀전략 실행
     hold_day = 0
     hold_day_list = []      # 보유기간
     open_profit = 0
-    open_profit_list =[]
+    open_profit_list = []
     close_profit = 0
     close_profit_list = []
     winnloss = 0
@@ -406,7 +417,7 @@ def download_test_portfolio_data():
     con.close()
     print("완료")
 
-def excute_tutle_strategy_for_portfolio():
+def run_tutle_strategy_for_portfolio():
     code_list = ['005930', '005380', '006360']  # 삼성전자, 현대차, GS건설
     name_list = ['삼성전자', '현대차', 'GS건설']  # 삼성전자, 현대차, GS건설
     file_name = "test_database.db"
@@ -418,9 +429,9 @@ def excute_tutle_strategy_for_portfolio():
         name = name_list[i]
         data = pd.read_sql("SELECT * FROM " + "'" + name + "'", con, index_col='date_name')
         if i == 0:
-            df = excute_tutle_strategy(data)
+            df = run_tutle_strategy(data)
         else:
-            add_data = excute_tutle_strategy(data)
+            add_data = run_tutle_strategy(data)
             df = df.append(add_data)
     df2 = df.sort_values(by='Date')
     test_df['Date'] = df2.query('event==1')['Date'].drop_duplicates()       # 이벤트가 1인것의 Date를 가져오고 중복을 제거한다.
@@ -445,22 +456,26 @@ def excute_tutle_strategy_for_portfolio():
     # 마지막행 추가 코드 수정 필요함
 
 
-def download_jisu():
+def Download_Jisu(start='20130102'):        # 지수 다운로드
     kospi_ticker = '^KS11'
     kosdaq_ticker = '^KQ11'
 
-    data_kospi = pdr.get_data_yahoo(kospi_ticker, start='20190101')
+    data_kospi = pdr.get_data_yahoo(kospi_ticker, start=start)
     data_kospi.reset_index(inplace=True)        # inplace=True 원본을 놔두지않고 바로 바꾼다.
-    data_kospi['Date'] = data_kospi['Date'].dt.strftime("%Y%m%d")        # 20220128 이런 형식으로 변경
-    return data_kospi
 
+    return_data = pd.DataFrame()
+    return_data['Date'] = data_kospi['Date'].dt.strftime("%Y%m%d")        # 20220128 이런 형식으로 변경
+    return_data['Kospi_Close'] = data_kospi['Adj Close']
+    return_data['Kospi_Change_R'] = return_data['Kospi_Close'].pct_change()
+    return_data['Kospi_Change_R'] = return_data['Kospi_Change_R'].round(5)
+    data_kosdaq = pdr.get_data_yahoo(kosdaq_ticker, start=start)
+    data_kosdaq.reset_index(inplace=True)
+    return_data['Kosdaq_Close'] = data_kosdaq['Adj Close']
+    return_data['Kosdaq_Change_R'] = return_data['Kosdaq_Close'].pct_change()
+    return_data['Kosdaq_Change_R'] = return_data['Kosdaq_Change_R'].round(5)
 
-    # date_index = data.index
-    # for date in date_index:
-    #     date = str(date)
-    #     date = date[:4] + date[5:7] + date[8:10]
-    #     date = int(date)
-    #     date_list.append(date)
+    return return_data
+
     # df = pd.DataFrame(data)
     # df['index'] = date_list
     # df['Open'] = pd.to_numeric(df['Open'])
@@ -479,7 +494,7 @@ def test_data():
         data = add_tech(data)
         DataToCSV(data)
 
-    df = excute_tutle_strategy(data)
+    df = run_tutle_strategy(data)
     DataToExcel(df)
 
 
@@ -497,19 +512,10 @@ def test_data():
 # LoadDataFromSqlite()
 
 # data = LoadDataFromSqlite()
-# result = excute_tutle_strategy(data)
+# result = run_tutle_strategy(data)
 # DataToExcel(result)
 # print(result)
 
-
-a = download_basic_data()
-a = calculate_technical_index(a)
-
-DataToSqlite(a)
-# a = a.reset_index()
-# date = a['Date']
-# formated_date = date.dt.strftime("%Y%m%d")      # 20220128 이런 형식으로 변경
-# print(formated_date)
-
-print(a)
+df = DownloadStockCode()
+DataToSqlite(df, 'code_data', 'code_data')
 
