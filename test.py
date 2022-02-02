@@ -21,14 +21,13 @@ def DownloadStockCode():
     df['code'] = df['code'].astype('str')       # 코드를 문자열 타입으로 바꾸기
     df['code'] = df['code'].str.zfill(6)        # 6 자리만큼 0으로 채운다.
     df = df.query("category != '신탁업 및 집합투자업' and category != '금융 지원 서비스업' and category != '기타 금융업'")        # 스팩, 지주, 투자회사 제거
+    df.reset_index(inplace=True, drop=True)
     return df
 
 # 삼성전자 - 005930
-def download_basic_data(code='005930', start_date='20130102'):      # 데이터 다운로드
+def download_basic_data(code='005930', start_date='20110102'):      # 데이터 다운로드
     # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
-
-    jisu = Download_Jisu(start=start_date)     # 지수 다운로드
-
+    # jisu = Download_Jisu(start=start_date)     # 지수 다운로드
     data = pdr.naver.NaverDailyReader(code, start=start_date).read()
 
     df = pd.DataFrame(data)
@@ -43,8 +42,7 @@ def download_basic_data(code='005930', start_date='20130102'):      # 데이터 
     df['change_ratio'] = df['change_ratio'].round(5)
     df['Volume'] = pd.to_numeric(df['Volume'])      # 데이터 타입을 숫자형으로 바꾸기
 
-    df = pd.merge(df, jisu, on='Date', how='left')
-
+    # df = pd.merge(df, jisu, on='Date', how='left')
     # df = df.set_index(keys='index', drop=True)          # 인덱스 이름을 index로 바꾸기, drop=False/True ~ 원본 index열 유지/제거.
     return df
 
@@ -57,8 +55,11 @@ def calculate_technical_index(df):    # 한종목의 기술적 지표 추가
     vo = df['Volume']
 
     df['Open_R'] = (op - shift_close) / shift_close
+    df['Open_R'].round(5)
     df['High_R'] = (hi - shift_close) / shift_close
+    df['High_R'].round(5)
     df['Low_R'] = (lo - shift_close) / shift_close
+    df['Low_R'].round(5)
     df['Vol_R'] = vo.pct_change()
     df['Vol_R'] = df['Vol_R'].round(5)      # 전일 대비 거래량
 
@@ -108,9 +109,8 @@ def DataToSqlite(df, name='삼성전자', file_name='Calculate_tech_test_data'):
     con.close()
     print(name, "Sqlite3로 저장완료")
 
-def LoadDataFromSqlite(file_name='Calculate_tech_test_data'):       # Sqlite로부터 데이터 불러오기
+def LoadDataFromSqlite(name='삼성전자', file_name='Calculate_tech_test_data'):       # Sqlite로부터 데이터 불러오기
     file_name = file_name + '.db'
-    name = '삼성전자'
     con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
     df = pd.read_sql("SELECT * FROM " + "'" + name + "'", con, index_col='index')    # 인덱스 칼럼을 Date로 지정
     con.close()
@@ -456,7 +456,7 @@ def run_tutle_strategy_for_portfolio():
     # 마지막행 추가 코드 수정 필요함
 
 
-def Download_Jisu(start='20130102'):        # 지수 다운로드
+def Download_Jisu(start='20110102'):        # 지수 다운로드
     kospi_ticker = '^KS11'
     kosdaq_ticker = '^KQ11'
 
@@ -465,40 +465,43 @@ def Download_Jisu(start='20130102'):        # 지수 다운로드
 
     return_data = pd.DataFrame()
     return_data['Date'] = data_kospi['Date'].dt.strftime("%Y%m%d")        # 20220128 이런 형식으로 변경
-    return_data['Kospi_Close'] = data_kospi['Adj Close']
+    return_data['Kospi_Close'] = data_kospi['Adj Close'].round(2)
     return_data['Kospi_Change_R'] = return_data['Kospi_Close'].pct_change()
     return_data['Kospi_Change_R'] = return_data['Kospi_Change_R'].round(5)
     data_kosdaq = pdr.get_data_yahoo(kosdaq_ticker, start=start)
     data_kosdaq.reset_index(inplace=True)
-    return_data['Kosdaq_Close'] = data_kosdaq['Adj Close']
+    return_data['Kosdaq_Close'] = data_kosdaq['Adj Close'].round(2)
     return_data['Kosdaq_Change_R'] = return_data['Kosdaq_Close'].pct_change()
     return_data['Kosdaq_Change_R'] = return_data['Kosdaq_Change_R'].round(5)
 
     return return_data
 
-    # df = pd.DataFrame(data)
-    # df['index'] = date_list
-    # df['Open'] = pd.to_numeric(df['Open'])
-    # df['Close'] = pd.to_numeric(df['Close'])
-    # df['High'] = pd.to_numeric(df['High'])
-    # df['Low'] = pd.to_numeric(df['Low'])
-    # df['Change'] = df['Close'].diff()
-    # df['Volume'] = pd.to_numeric(df['Volume'])
-    #     df.to_sql(name, con, if_exists="replace")
+def LoadCodeFromSQL(name='code_data', file_name = "code_data"):     # 종목코드 읽어오기
+    df = LoadDataFromSqlite(name=name, file_name=file_name)
+    return df
 
-def test_data():
-    try:
-        data = pd.read_csv("test_data.csv")
-    except FileNotFoundError:
-        data = download_basic_data('005930')
-        data = add_tech(data)
-        DataToCSV(data)
+def DownLoadBasicDataAndSaveSQL(file_name='stock_data'):        # 모든 종목 데이터 다운로드와 sql로 저장
+    code_data = LoadCodeFromSQL()
+    codes = list(code_data['code'])
+    names = list(code_data['name'])
+    file_name = file_name + '.db'
 
-    df = run_tutle_strategy(data)
-    DataToExcel(df)
+    jisu_data = Download_Jisu()
+
+    con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
+    for i in range(len(codes)):
+        code = codes[i]
+        name = names[i]
+        stock_basic_data = download_basic_data(code)
+        stock_basic_data = pd.merge(stock_basic_data, jisu_data, on='Date', how='left')     # 지수 데이터 추가
+        stock_basic_data = calculate_technical_index(stock_basic_data)      # 기술적 지표 추가
+        stock_basic_data.to_sql(name, con, if_exists="replace")
+        print(name, i, "/", len(codes), "Sqlite3로 저장완료")
+    con.close()
+
+DownLoadBasicDataAndSaveSQL()
 
 
-# data = download_basic_data()
 # data_technical_calculated = calculate_technical_index(data)
 # DataToSqlite(data_technical_calculated)
 # data1 = LoadDataFromSqlite()
@@ -515,7 +518,4 @@ def test_data():
 # result = run_tutle_strategy(data)
 # DataToExcel(result)
 # print(result)
-
-df = DownloadStockCode()
-DataToSqlite(df, 'code_data', 'code_data')
 

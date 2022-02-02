@@ -344,8 +344,7 @@ class prototype_trader(QMainWindow, form_class):
         df['stock_close_profit'] = close_profit_list
         df['winnloss'] = winnloss_list
         df['stock_cum_profit'] = df['stock_close_profit'].cumsum() + df['stock_open_profit']  # 누적 수익
-        df['stock_day20_profit'] = df['stock_close_profit'].rolling(window=20).sum() + df[
-            'stock_open_profit']  # 최근 20일 수익
+        df['stock_day20_profit'] = df['stock_close_profit'].rolling(window=20).sum() + df['stock_open_profit']  # 최근 20일 수익
         return df
 
     def DataToExcel(self, data, save_name="data_result"):  # contine : 이어쓰기 여부 1이면 이어쓰기임   @@@@@@@@@@@@ 수정필요함
