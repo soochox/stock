@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66f2d854-22d1-4902-8708-4e668654215d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection.txt" beforeDir="false" afterPath="$PROJECT_DIR$/connection.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prototype.ui" beforeDir="false" afterPath="$PROJECT_DIR$/prototype.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/prototype_trader.py" beforeDir="false" afterPath="$PROJECT_DIR$/prototype_trader.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
@@ -13,11 +17,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="384">
-              <caret line="54" column="21" lean-forward="true" selection-start-line="54" selection-start-column="21" selection-end-line="54" selection-end-column="21" />
+            <state relative-caret-position="9063">
+              <caret line="490" selection-start-line="490" selection-end-line="490" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -25,13 +29,17 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/prototype_trader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
-              <caret line="346" column="90" selection-start-line="346" selection-start-column="90" selection-end-line="346" selection-end-column="90" />
+            <state relative-caret-position="399">
+              <caret line="96" column="27" lean-forward="true" selection-start-line="96" selection-start-column="27" selection-end-line="96" selection-end-column="27" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#6429#7689#0" />
+                <element signature="e#7756#8691#0" />
+                <element signature="e#8752#15766#0" />
+                <element signature="e#15878#16629#0" />
               </folding>
             </state>
           </provider>
@@ -40,11 +48,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AI_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2721">
-              <caret line="171" column="109" lean-forward="true" selection-start-line="171" selection-start-column="11" selection-end-line="171" selection-end-column="109" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="456">
+              <caret line="24" column="34" selection-start-line="24" selection-start-column="34" selection-end-line="24" selection-end-column="34" />
             </state>
           </provider>
         </entry>
@@ -59,12 +64,13 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DS_stock_none_GUI.py">
+        <entry file="file://$PROJECT_DIR$/AI_test_v2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="133" column="19" selection-start-line="133" selection-start-column="8" selection-end-line="133" selection-end-column="19" />
+            <state relative-caret-position="1311">
+              <caret line="87" column="25" selection-start-line="87" selection-start-column="25" selection-end-line="87" selection-end-column="25" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#14086#32908#0" />
               </folding>
             </state>
           </provider>
@@ -73,8 +79,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DS_stock.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="475">
-              <caret line="520" column="36" lean-forward="true" selection-start-line="520" selection-start-column="36" selection-end-line="520" selection-end-column="36" />
+            <state relative-caret-position="9557">
+              <caret line="520" column="36" selection-start-line="520" selection-start-column="36" selection-end-line="520" selection-end-column="36" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -138,36 +144,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>tutle</find>
-      <find>def exc</find>
-      <find>def do</find>
-      <find>def downl</find>
-      <find>reset_in</find>
+      <find>Loadd</find>
+      <find>toSq</find>
+      <find>tosql</find>
+      <find>loadc</find>
+      <find>loaddata</find>
+      <find>msg</find>
+      <find>Upda</find>
+      <find>de</find>
+      <find>delet</find>
+      <find>name</find>
+      <find>codes</find>
       <find>upd</find>
-      <find>excu</find>
-      <find>excute</find>
-      <find>run_</find>
-      <find>Jisu</find>
-      <find>u</find>
-      <find>diff</find>
-      <find>jisu</find>
-      <find>DatatoS</find>
-      <find>stockc</find>
-      <find>데이터</find>
-      <find>str</find>
-      <find>.dt</find>
-      <find>query</find>
-      <find>Datatos</find>
+      <find>@@@</find>
+      <find>co</find>
+      <find>df.to</find>
+      <find>ud</find>
+      <find>load</find>
+      <find>update</find>
+      <find>정렬</find>
+      <find>upda</find>
+      <find>\</find>
       <find>con</find>
-      <find>datatos</find>
-      <find>loadda</find>
-      <find>loaddataf</find>
-      <find>down</find>
-      <find>datato</find>
-      <find>downl</find>
-      <find>#####</find>
-      <find>round</find>
-      <find>tech</find>
+      <find>con =</find>
+      <find>Run</find>
+      <find>con =</find>
+      <find>to_sql</find>
+      <find>push</find>
+      <find>DownloadStockCode</find>
+      <find>완료</find>
+      <find>runt</find>
     </findStrings>
     <replaceStrings>
       <replace>(i-1)</replace>
@@ -239,18 +245,18 @@
         <option value="$PROJECT_DIR$/code_backup.py" />
         <option value="$PROJECT_DIR$/scraping.py" />
         <option value="$PROJECT_DIR$/code_test.py" />
-        <option value="$PROJECT_DIR$/AI_test.py" />
         <option value="$PROJECT_DIR$/study_python.py" />
         <option value="$PROJECT_DIR$/AI_test_v2.py" />
         <option value="$PROJECT_DIR$/test_apply.py" />
-        <option value="$PROJECT_DIR$/prototype_trader.py" />
+        <option value="$PROJECT_DIR$/AI_test.py" />
         <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/prototype_trader.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="355" />
-    <option name="y" value="193" />
+    <option name="x" value="917" />
+    <option name="y" value="200" />
     <option name="width" value="1210" />
     <option name="height" value="992" />
   </component>
@@ -306,7 +312,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.test">
+  <component name="RunManager" selected="Python.prototype_trader">
     <configuration name="AI_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="gaebal" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -414,10 +420,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test" />
-        <item itemvalue="Python.DS_stock" />
         <item itemvalue="Python.prototype_trader" />
         <item itemvalue="Python.AI_test" />
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.DS_stock" />
         <item itemvalue="Python.study_python" />
       </list>
     </recent_temporary>
@@ -446,14 +452,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11169652" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.09694415" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24973656" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.45679662" visible="true" weight="0.25460455" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.45679662" weight="0.25460455" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49841937" weight="0.3954496" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -461,7 +466,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.5094837" side_tool="true" weight="0.32286024" />
       <window_info anchor="bottom" id="Python Console" order="9" sideWeight="0.4641728" weight="0.26218852" />
-      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.49051633" weight="0.32286024" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" sideWeight="0.49051633" visible="true" weight="0.32286024" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -516,13 +521,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test.py</url>
-          <line>431</line>
+          <line>386</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test.py</url>
-          <line>494</line>
+          <line>465</line>
           <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/prototype_trader.py</url>
+          <line>388</line>
+          <option name="timeStamp" value="36" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -691,16 +701,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AI_test_v2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1843">
-          <caret line="115" column="110" selection-start-line="115" selection-start-column="12" selection-end-line="115" selection-end-column="110" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/ProgramData/Anaconda3/Lib/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
@@ -722,6 +722,68 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="9937">
           <caret line="523" column="25" selection-start-line="523" selection-start-column="25" selection-end-line="523" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DS_stock_none_GUI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2185">
+          <caret line="133" column="19" selection-start-line="133" selection-start-column="8" selection-end-line="133" selection-end-column="19" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/io/sql.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="1444" selection-start-line="1444" selection-end-line="1444" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9063">
+          <caret line="490" selection-start-line="490" selection-end-line="490" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AI_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="456">
+          <caret line="24" column="34" selection-start-line="24" selection-start-column="34" selection-end-line="24" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/study_python.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AI_test_v2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1311">
+          <caret line="87" column="25" selection-start-line="87" selection-start-column="25" selection-end-line="87" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#14086#32908#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DS_stock.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9557">
+          <caret line="520" column="36" selection-start-line="520" selection-start-column="36" selection-end-line="520" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -762,59 +824,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/study_python.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AI_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2721">
-          <caret line="171" column="109" lean-forward="true" selection-start-line="171" selection-start-column="11" selection-end-line="171" selection-end-column="109" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/prototype_trader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="346" column="90" selection-start-line="346" selection-start-column="90" selection-end-line="346" selection-end-column="90" />
+        <state relative-caret-position="399">
+          <caret line="96" column="27" lean-forward="true" selection-start-line="96" selection-start-column="27" selection-end-line="96" selection-end-column="27" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DS_stock_none_GUI.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="133" column="19" selection-start-line="133" selection-start-column="8" selection-end-line="133" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DS_stock.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="520" column="36" lean-forward="true" selection-start-line="520" selection-start-column="36" selection-end-line="520" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="54" column="21" lean-forward="true" selection-start-line="54" selection-start-column="21" selection-end-line="54" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#6429#7689#0" />
+            <element signature="e#7756#8691#0" />
+            <element signature="e#8752#15766#0" />
+            <element signature="e#15878#16629#0" />
           </folding>
         </state>
       </provider>

@@ -21,7 +21,11 @@ class prototype_trader(QMainWindow, form_class):
         self.timer.start(1000)
         self.timer.timeout.connect(self.timeout)
 
-        self.pushButton.clicked.connect(self.DownloadStockCode)
+        self.pushButton.clicked.connect(self.UpdateStockCode)
+        self.pushButton_4.clicked.connect(self.DeleteColumn)
+        self.pushButton_5.clicked.connect(self.DownLoadBasicDataAndSaveSQL)
+        self.pushButton_6.clicked.connect(self.test_button)
+        self.pushButton_7.clicked.connect(self.test_button)
 
     def timeout(self):
         current_time = QTime.currentTime()
@@ -29,9 +33,8 @@ class prototype_trader(QMainWindow, form_class):
         time_msg = "현재시간: " + text_time
         self.statusbar.showMessage(time_msg)
 
-    def DownloadStockCode(self):
-        df = pd.read_html('http://kind.krx.co.kr/corpgeneral/corpList.do?method=download', header=0)[
-            0]  # 한국거래소 홈페이지에서 자동으로 종목코드를 다운로드한다.
+    def UpdateStockCode(self):        # 코드 다운로드 후 sql에 저장
+        df = pd.read_html('http://kind.krx.co.kr/corpgeneral/corpList.do?method=download', header=0)[0]  # 한국거래소 홈페이지에서 자동으로 종목코드를 다운로드한다.
         df_columns = df.columns
         df.drop([df_columns[3], df_columns[4], df_columns[5], df_columns[6], df_columns[7], df_columns[8]], axis=1,
                 inplace=True)
@@ -40,16 +43,15 @@ class prototype_trader(QMainWindow, form_class):
         df['code'] = df['code'].str.zfill(6)  # 6 자리만큼 0으로 채운다.
         df = df.query("category != '신탁업 및 집합투자업' and category != '금융 지원 서비스업' \
         and category != '기타 금융업'")  # 스팩, 지주, 투자회사 제거
+        self.DataToSqlite(file_name='code_data')
         msg = "종목코드 다운로드 완료"
         self.statusbar.showMessage(msg)
-        return df
+
 
     # 삼성전자 - 005930
-    def download_basic_data(self, code='005930', start_date='20130102'):  # 데이터 다운로드
+    def download_basic_data(self, code='005930', start_date='20110102'):  # 데이터 다운로드
         # data = pdr.get_data_yahoo(code + '.KS', start='20190101')
-
-        jisu = Download_Jisu(start=start_date)  # 지수 다운로드
-
+        # jisu = Download_Jisu(start=start_date)     # 지수 다운로드
         data = pdr.naver.NaverDailyReader(code, start=start_date).read()
 
         df = pd.DataFrame(data)
@@ -64,8 +66,7 @@ class prototype_trader(QMainWindow, form_class):
         df['change_ratio'] = df['change_ratio'].round(5)
         df['Volume'] = pd.to_numeric(df['Volume'])  # 데이터 타입을 숫자형으로 바꾸기
 
-        df = pd.merge(df, jisu, on='Date', how='left')
-
+        # df = pd.merge(df, jisu, on='Date', how='left')
         # df = df.set_index(keys='index', drop=True)          # 인덱스 이름을 index로 바꾸기, drop=False/True ~ 원본 index열 유지/제거.
         return df
 
@@ -129,27 +130,27 @@ class prototype_trader(QMainWindow, form_class):
         con.close()
         print(name, "Sqlite3로 저장완료")
 
-    def LoadDataFromSqlite(self, file_name='Calculate_tech_test_data'):  # Sqlite로부터 데이터 불러오기
+    def LoadDataFromSqlite(self, name='삼성전자', file_name='stock_data'):  # Sqlite로부터 데이터 불러오기
         file_name = file_name + '.db'
-        name = '삼성전자'
         con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
         df = pd.read_sql("SELECT * FROM " + "'" + name + "'", con, index_col='index')  # 인덱스 칼럼을 Date로 지정
         con.close()
         print(name, "Sqlite3로 불러오기 완료")
         return df
 
-    def UpdateBasicDateAndTechnicalIndex(self):  # code = 삼성전자,
+    def UpdateBasicDataAndTechnicalIndex(self, code='005930', name='삼성전자'):  # code = 삼성전자(1개 종목)
         today_weekday = datetime.today().weekday()  # 오늘 요일, 0 ~ 월요일, 6 ~ 일요일
         delta_date = 0
         if today_weekday == 5:  # 오늘 토요일이면
             delta_date = 1
         elif today_weekday == 6:  # 오늘이 일요일이면
-            delta_date = 1
+            delta_date = 2
 
         last_date = datetime.today() - timedelta(delta_date)  # 마지막날 토일 제외
         last_date = last_date.strftime("%Y%m%d")
+        print("최근 개장일", last_date)
 
-        df = LoadDataFromSqlite()
+        df = self.LoadDataFromSqlite(name)
         last_date_from_data = df.index[-1]  # index는 리스트 형식으므로 iloc를 쓰면 안된다는 걸 기억할 것
 
         if last_date_from_data == last_date:
@@ -157,12 +158,40 @@ class prototype_trader(QMainWindow, form_class):
             exit()  # 데이터가 최신이면 프로그램을 종료한다.
         else:
             date_100day_ago = (datetime.today() - timedelta(120)).strftime("%Y%m%d")  # 100일전 날짜
-            basic_data = download_basic_data('005930', start_date=date_100day_ago)
-            data_calculated_techniclal = calculate_technical_index(basic_data)
+            basic_data = self.download_basic_data(code, start_date=date_100day_ago)      # 코드는 삼성전자
+            data_calculated_techniclal = self.calculate_technical_index(basic_data)
             df = df.append(data_calculated_techniclal).drop_duplicates(subset=['Date'])
             df.reset_index(inplace=True)
+            df.drop("index", axis=1, inplace=True)  # 열 삭제
             # new_data = df.append(data_calculated_techniclal).sort_values(by='Date')
             return df  # 최신화된 데이터를 리턴한다.
+
+
+    def UpdateBasicDataAndTechnicallIndexForAll(self):
+
+        file_name = 'stock_data.db'
+        code_data = self.LoadCodeFromSQL()
+        codes = list(code_data['code'])
+        names = list(code_data['name'])
+        con2 = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
+        print("주식 데이터 업데이트 시작")
+
+        for i in range(len(codes)):
+
+            code = codes[i]
+            name = names[i]
+            print(i, len(names), name)
+            df = self.UpdateBasicDataAndTechnicalIndex(code, name)
+
+            # # 열순서 정렬
+            df = df[['name', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Change', 'change_ratio',
+            'Kospi_Close', 'Kospi_Change_R', 'Kosdaq_Close', 'Kosdaq_Change_R',
+            'Open_R', 'High_R', 'Low_R', 'Vol_R',
+            'max_10_R', 'min_10_R', 'max_20_R', 'min_20_R', 'max_55_R', 'min_55_R', 'max_60_R', 'min_60_R']]
+            df.to_sql(name, con2, if_exists="replace")
+        con2.close()
+        print("업데이트 완료")
+
 
     def run_tutle_strategy(self, df):  # 터틀전략 실행
         close_list = df.Close
@@ -347,7 +376,31 @@ class prototype_trader(QMainWindow, form_class):
         df['stock_day20_profit'] = df['stock_close_profit'].rolling(window=20).sum() + df['stock_open_profit']  # 최근 20일 수익
         return df
 
-    def DataToExcel(self, data, save_name="data_result"):  # contine : 이어쓰기 여부 1이면 이어쓰기임   @@@@@@@@@@@@ 수정필요함
+    def RunTutleStrategyAll(self):
+        load_file_name = 'stock_data.db'
+        save_file_name = 'tutle_strategy.db'
+        code_data = self.LoadCodeFromSQL()
+        # codes = code_data['code']
+        names = list(code_data['name'])
+        # self.DataToExcel(code_data, save_name='code_xlsx')    # 테스트용
+        # names = ['삼성전자']      # test용
+        names_length = len(names)
+        con = sqlite3.connect("c:/users/백/%s" % load_file_name)  # 키움증권 다운로드 종목 데이터 베이스
+        con2 = sqlite3.connect("c:/users/백/%s" % save_file_name)  # 키움증권 다운로드 종목 데이터 베이스
+        for i in range(names_length):
+            # code = codes[i]
+            name = names[i]
+            print(i, '/', names_length, name, "진입")
+            df = pd.read_sql("SELECT * FROM " + "'" + name + "'", con, index_col='index')  # 인덱스 칼럼을 Date로 지정
+            tutle = self.run_tutle_strategy(df)
+            tutle.to_sql(name, con2, if_exists="replace")
+            print(i+1, '/', names_length, name, "완료")
+        con.close()
+        con2.close()
+        print('최종완료')
+
+
+    def DataToExcel(self, data, save_name="data_result"):  # continue : 이어쓰기 여부 1이면 이어쓰기임   // 수정필요함
 
         path = "c:/users/백/save_excel.xlsx"
         wb = load_workbook(path, data_only=True)
@@ -371,7 +424,7 @@ class prototype_trader(QMainWindow, form_class):
         wb.save(save_path)
         print("saved to file name %s.xlsx!!" % save_name)
 
-    def Download_Jisu(self, start='20130102'):  # 지수 다운로드
+    def Download_Jisu(self, start='20110102'):  # 지수 다운로드
         kospi_ticker = '^KS11'
         kosdaq_ticker = '^KQ11'
 
@@ -380,15 +433,58 @@ class prototype_trader(QMainWindow, form_class):
 
         return_data = pd.DataFrame()
         return_data['Date'] = data_kospi['Date'].dt.strftime("%Y%m%d")  # 20220128 이런 형식으로 변경
-        return_data['Kospi_Close'] = data_kospi['Adj Close']
+        return_data['Kospi_Close'] = data_kospi['Adj Close'].round(2)
         return_data['Kospi_Change_R'] = return_data['Kospi_Close'].pct_change()
         return_data['Kospi_Change_R'] = return_data['Kospi_Change_R'].round(5)
         data_kosdaq = pdr.get_data_yahoo(kosdaq_ticker, start=start)
         data_kosdaq.reset_index(inplace=True)
-        return_data['Kosdaq_Close'] = data_kosdaq['Adj Close']
+        return_data['Kosdaq_Close'] = data_kosdaq['Adj Close'].round(2)
         return_data['Kosdaq_Change_R'] = return_data['Kosdaq_Close'].pct_change()
         return_data['Kosdaq_Change_R'] = return_data['Kosdaq_Change_R'].round(5)
         return return_data
+
+    def DownLoadBasicDataAndSaveSQL(self):  # 모든 종목 데이터 다운로드와 sql로 저장
+        file_name = 'stock_data.db'         # @@@@
+        code_data = self.LoadCodeFromSQL()
+        codes = list(code_data['code'])
+        names = list(code_data['name'])
+
+        jisu_data = self.Download_Jisu()
+
+        con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
+        len_code = len(codes)
+        for i in range(len(codes)):
+            code = codes[i]
+            name = names[i]
+            stock_basic_data = self.download_basic_data(code)
+            stock_basic_data = pd.merge(stock_basic_data, jisu_data, on='Date', how='left')  # 지수 데이터 추가
+            stock_basic_data = self.calculate_technical_index(stock_basic_data)  # 기술적 지표 추가
+            stock_basic_data['name'] = name
+            stock_basic_data.to_sql(name, con, if_exists="replace")
+            print(name, i, "/", len_code, "Sqlite3로 저장완료")
+        con.close()
+        print("전체 다운로드 완료")
+
+    def LoadCodeFromSQL(self, name='code_data', file_name="code_data"):  # 종목코드 읽어오기
+        df = self.LoadDataFromSqlite(name=name, file_name=file_name)
+        return df
+
+    def DeleteColumn(self):
+        file_name = 'stock_data.db'
+        drop_column = self.lineEdit_2.text()
+        con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
+        table_list = pd.read_sql("SELECT name FROM sqlite_master WHERE type IN ('table', 'view') \
+                               AND name NOT LIKE 'sqlite_%' UNION ALL SELECT name FROM sqlite_temp_master \
+                               WHERE type IN ('table', 'view') ORDER BY 1", con)  # 테이블 이름을 불러온다.
+        table_list = list(table_list['name'])
+        for i in range(len(table_list)):
+            table_name = table_list[i]
+            print(i, len(table_list), table_name)
+            df = pd.read_sql("SELECT * FROM " + "'" + table_name + "'", con, index_col='index')
+            df.drop(drop_column, axis=1, inplace=True)  # 열 삭제
+            df.to_sql(table_name, con, if_exists="replace")
+        con.close()
+        print('열 %s 삭제 완료' % drop_column)
 
     def test_data(self):
         try:
@@ -397,8 +493,12 @@ class prototype_trader(QMainWindow, form_class):
             data = download_basic_data('005930')
             data = add_tech(data)
             DataToCSV(data)
-        df = run_tutle_strategy(data)
+        df = self.run_tutle_strategy(data)
         DataToExcel(df)
+
+    def test_button(self):
+        print("테스트입니다.")
+        self.RunTutleStrategyAll()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

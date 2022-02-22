@@ -55,11 +55,11 @@ def calculate_technical_index(df):    # 한종목의 기술적 지표 추가
     vo = df['Volume']
 
     df['Open_R'] = (op - shift_close) / shift_close
-    df['Open_R'].round(5)
+    df['Open_R'] = df['Open_R'].round(5)
     df['High_R'] = (hi - shift_close) / shift_close
-    df['High_R'].round(5)
+    df['High_R'] = df['High_R'].round(5)
     df['Low_R'] = (lo - shift_close) / shift_close
-    df['Low_R'].round(5)
+    df['Low_R'] = df['Low_R'].round(5)
     df['Vol_R'] = vo.pct_change()
     df['Vol_R'] = df['Vol_R'].round(5)      # 전일 대비 거래량
 
@@ -117,7 +117,7 @@ def LoadDataFromSqlite(name='삼성전자', file_name='Calculate_tech_test_data'
     print(name, "Sqlite3로 불러오기 완료")
     return df
 
-def UpdateBasicDateAndTechnicalIndex():     # code = 삼성전자,
+def UpdateBasicDataAndTechnicalIndex():     # code = 삼성전자,
     today_weekday = datetime.today().weekday()      # 오늘 요일, 0 ~ 월요일, 6 ~ 일요일
     delta_date = 0
     if today_weekday == 5:   # 오늘 토요일이면
@@ -351,51 +351,6 @@ def DataToExcel(data, save_name="data_result"):  # contine : 이어쓰기 여부
     wb.save(save_path)
     print("saved to file name %s.xlsx!!" % save_name)
 
-#
-# # tickers = ['^KS11', '^KQ11']  # 코스피, 코스닥
-# try:
-#     data = pd.read_csv("test_005930.csv")
-#     print("File is founded, load data...")
-#
-# except FileNotFoundError:
-#     code = '005930' # 삼성전자
-#     print("File is Not founded, download data...")
-#     data = download_basic_data(code)
-#
-# try:
-#     data_jisu = pd.read_csv("test_jisu.csv")
-#     print("File is founded, load data...")
-#
-# except FileNotFoundError:
-#     code = '^KS11'  # 코스피
-#     print("File is Not founded, download data...")
-#     data_jisu = download_jisu(code)
-#
-# data2 = add_tech(data)
-# tut_data = tutle_stg(data2)
-# print('test')
-#
-# # 데이터 합병
-# data_jisu2 = pd.DataFrame()
-# data_jisu2['Date'] = data_jisu['Date']
-# data_jisu2['kospi close'] = data_jisu['Adj Close']
-# data_jisu2['kospi change_r'] = data_jisu['change_ratio']
-# print(data_jisu2)
-# df_merge = pd.merge(tut_data, data_jisu2, how='left', on='Date')
-#
-# print(df_merge)
-# df_merge.to_csv("final_data.csv")
-# df_event = df_merge.query('event == 1')
-# df_event = df_event.append(df_merge.query('Date == "2021-12-30"'))
-# df_event.to_csv("event.csv")
-# print(df_merge.query('Date == "2021-12-30"'))
-# df3 = df1.merge(df2, how='outer', on='Date')
-# df3 = pd.concat([df1, df2]).drop_duplicates()       # 합집합
-
-# data = download_basic_data('005930')
-# data = add_tech(data)
-# DataToCSV(data)
-
 def download_test_portfolio_data():
     code_list = ['005930', '005380', '006360']      # 삼성전자, 현대차, GS건설
     name_list = ['삼성전자', '현대차', 'GS건설']  # 삼성전자, 현대차, GS건설
@@ -473,12 +428,28 @@ def Download_Jisu(start='20110102'):        # 지수 다운로드
     return_data['Kosdaq_Close'] = data_kosdaq['Adj Close'].round(2)
     return_data['Kosdaq_Change_R'] = return_data['Kosdaq_Close'].pct_change()
     return_data['Kosdaq_Change_R'] = return_data['Kosdaq_Change_R'].round(5)
-
     return return_data
 
 def LoadCodeFromSQL(name='code_data', file_name = "code_data"):     # 종목코드 읽어오기
     df = LoadDataFromSqlite(name=name, file_name=file_name)
     return df
+
+def DeleteColumn():
+    drop_column = 'Open_R'
+    file_name = 'stock_data.db'
+    # column_name = self.lineEdit_2.text()
+    con = sqlite3.connect("c:/users/백/%s" % file_name)  # 키움증권 다운로드 종목 데이터 베이스
+    table_list = pd.read_sql("SELECT name FROM sqlite_master WHERE type IN ('table', 'view') \
+                       AND name NOT LIKE 'sqlite_%' UNION ALL SELECT name FROM sqlite_temp_master \
+                       WHERE type IN ('table', 'view') ORDER BY 1", con)        # 테이블 이름을 불러온다.
+    table_list = list(table_list['name'])
+    for i in range(len(table_list)):
+        table_name = table_list[i]
+        print(i, len(table_list), table_name)
+        df = pd.read_sql("SELECT * FROM " + "'" + table_name + "'", con, index_col='index')    # 인덱스 칼럼을 Date로 지정)
+        df.drop(drop_column, axis=1, inplace=True)      # 열 삭제
+        df.to_sql(table_name, con, if_exists="replace")
+    con.close()
 
 def DownLoadBasicDataAndSaveSQL(file_name='stock_data'):        # 모든 종목 데이터 다운로드와 sql로 저장
     code_data = LoadCodeFromSQL()
@@ -498,8 +469,6 @@ def DownLoadBasicDataAndSaveSQL(file_name='stock_data'):        # 모든 종목 
         stock_basic_data.to_sql(name, con, if_exists="replace")
         print(name, i, "/", len(codes), "Sqlite3로 저장완료")
     con.close()
-
-DownLoadBasicDataAndSaveSQL()
 
 
 # data_technical_calculated = calculate_technical_index(data)

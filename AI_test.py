@@ -3991,10 +3991,10 @@ class baek_data_analysis2(QMainWindow, form_class):
         # self.add_month_change()
         # self.tech__("삼천당제약")  # 한종목의 기술적 지표 계산
         print("시작")
-
+        self.send_msg_telegram("아아아")
         # self.daily_choochun()
         # self.add_tech('quant')
-        self.tutle_to_all_stock()
+        # self.tutle_to_all_stock()
 
         # self.add_month_index_all()
         # df = self.read_lookup_data_from_excel()
